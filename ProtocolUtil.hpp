@@ -444,12 +444,12 @@ class Entry
                 ProcessNonCgi(_conn, _rq, _rsp);
             }
         }
-        static void* HandlerRequest(void *_arg)
+        static int HandlerRequest(int _sock)
         {
 
             LOG(INFO,"start HandlerRequest");
-            int _sock=*(int*)_arg;
-            delete (int*)_arg;
+           // int _sock=*(int*)_arg;
+           // delete (int*)_arg;
             Connect*  _conn=new Connect(_sock);
             Request* _rq=new Request();
             Response* _rsp=new Response();

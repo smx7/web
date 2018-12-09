@@ -1,14 +1,15 @@
 #pragma once
 #include<pthread.h>
 #include "ProtocolUtil.hpp"
+#include "ThreadPool.hpp"
 #include"Log.hpp"
 class HttpdServer{
     private:
         int listen_sock;
         int port;
-
+        ThreadPool* tp;
     public:
-        HttpdServer(int port_):port(port_),listen_sock(-1)
+        HttpdServer(int port_):port(port_),listen_sock(-1),tp(NULL)
         {}
 
         void InitServer()
@@ -40,7 +41,9 @@ class HttpdServer{
                 exit(4);
             }
             LOG(INFO,"InitSever Success!");
-
+            
+            tp=new ThreadPool();
+            tp->InitThreadPool();
 
         }
         void Start()
@@ -57,11 +60,13 @@ class HttpdServer{
                     continue;
                 }
                 LOG(INFO,"Get New Cilent,Create Thread.");
-                pthread_t tid;
-                int *sockp=new int;
-                *sockp=sock;
-                pthread_create(&tid,NULL,Entry::HandlerRequest,(void*)sockp);
-
+               // pthread_t tid;
+               // int *sockp=new int;
+               // *sockp=sock;
+               // pthread_create(&tid,NULL,Entry::HandlerRequest,(void*)sockp);
+                Task t;
+                t.SetTask(sock,Entry::HandlerRequest);
+                tp->PushTask(t);
             }
         }
 
